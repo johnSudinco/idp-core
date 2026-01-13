@@ -1,6 +1,6 @@
 # **Arquitectura Limpia** 
   
-![img_1.png](img_1.png)
+![img_1.png](img_1.png) ![img_2.png](img_2.png)
 ## **¿Qué significa Request?**
 
 Se usa para entradas que vienen desde el cliente (frontend, API REST, etc.).

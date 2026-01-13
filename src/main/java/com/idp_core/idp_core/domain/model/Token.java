@@ -1,9 +1,12 @@
 package com.idp_core.idp_core.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
-
+@Getter
+@Setter
 @Entity
 @Table(name = "refresh_tokens", schema = "auth")
 public class Token {

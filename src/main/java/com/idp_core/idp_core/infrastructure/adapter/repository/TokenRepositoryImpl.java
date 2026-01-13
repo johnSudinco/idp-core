@@ -7,9 +7,9 @@ import java.util.Optional;
 
 @Repository
 public class TokenRepositoryImpl implements TokenRepositoryPort {
-    private final JpaTokenRepository jpaTokenRepository;
+    private final JpaRefreshTokenRepository jpaTokenRepository;
 
-    public TokenRepositoryImpl(JpaTokenRepository jpaTokenRepository) {
+    public TokenRepositoryImpl(JpaRefreshTokenRepository jpaTokenRepository) {
         this.jpaTokenRepository = jpaTokenRepository;
     }
 

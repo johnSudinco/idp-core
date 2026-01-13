@@ -1,6 +1,8 @@
 package com.idp_core.idp_core.web.controller;
 
 import com.idp_core.idp_core.application.dto.*;
+import com.idp_core.idp_core.application.port.SessionService;
+import com.idp_core.idp_core.application.port.TokenService;
 import com.idp_core.idp_core.application.usecase.*;
 import com.idp_core.idp_core.domain.model.AuditLog;
 import com.idp_core.idp_core.domain.port.external.EmailServicePort;
@@ -9,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,6 +28,8 @@ public class AuthController {
     private final PasswordRecoveryUseCase passwordRecoveryUseCase;
     private final EmailServicePort emailServicePort;
     private final LogAuditEventUseCase logAuditEventUseCase;
+    private final TokenService jwtService;
+    private final SessionService sessionService ;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(@RequestBody RegisterRequest request) {
@@ -122,5 +127,32 @@ public class AuthController {
             return ResponseEntity.ok(new ApiResponse<>(true, "OK", "Contraseña actualizada correctamente"));
 
     }
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<String>> logout(
+            HttpServletRequest request,
+            @RequestBody LogoutRequest logoutRequest) {
+
+        // 1. Access token del header → cerrar sesión
+        String accessToken = extractToken(request);
+        Long userId = jwtService.getUserIdFromToken(accessToken);
+        sessionService.terminateSession(userId, accessToken);
+
+        // 2. Refresh token del body → revocar
+        refreshTokenUseCase.revokeByRefreshToken(logoutRequest.getRefreshToken());
+
+        // 3. Respuesta
+        return ResponseEntity.ok(new ApiResponse<>(true, "OK", "Sesión cerrada correctamente"));
+    }
+
+
+    private String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        throw new IllegalArgumentException("Token no encontrado en el header Authorization");
+    }
+
 
 }

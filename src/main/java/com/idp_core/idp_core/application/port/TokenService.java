@@ -2,6 +2,7 @@ package com.idp_core.idp_core.application.port;
 
 import com.idp_core.idp_core.domain.model.Client;
 import com.idp_core.idp_core.domain.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,11 @@ public class TokenService {
                 .setExpiration(new Date(System.currentTimeMillis() + 3600_000)) // 1 hora
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
+    }
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey.getBytes())
+                .parseClaimsJws(token) .getBody();
+        return Long.valueOf(claims.getSubject()); // el "sub" es el userId
     }
 }
