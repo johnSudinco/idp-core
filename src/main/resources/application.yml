@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: idp-core
+  datasource:
+    url: jdbc:postgresql://localhost:5433/idp
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+      host: smtp.gmail.com
+      port: 587
+      username: johnantoniio@gmail.com
+      password: hefspiogshzvgypk
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
+
+server:
+  port: 9090
+
+jwt:
+  expiration: 1800000
+  issuer: idp-core
+  secret: 3f8d9a7c2e6b4f1a9d8c7e5f3a2b1c0d
+
+
