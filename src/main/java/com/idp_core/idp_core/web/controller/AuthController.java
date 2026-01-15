@@ -131,17 +131,35 @@ public class AuthController {
             HttpServletRequest request,
             @RequestBody LogoutRequest logoutRequest) {
 
+        // 1️ Extraer token y usuario
         String accessToken = extractToken(request);
-
         Long userId = jwtService.getUserIdFromToken(accessToken);
+
+        // 2️ Terminar sesión en DB
         sessionService.terminateSession(userId, accessToken);
 
+        // 3️ Revocar refresh token
         refreshTokenUseCase.revokeByRefreshToken(logoutRequest.getRefreshToken());
 
+        // 4️ Log de auditoría
+        logAuditEventUseCase.execute(AuditLog.builder()
+                .actorUserId(userId)
+                .action("LOGOUT_SUCCESS")
+                .targetType("USER")
+                .targetId(userId)
+                .correlationId(jwtService.getCorrelationId(accessToken)) // si tienes un método para obtenerlo
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-Agent"))
+                .metadata("Cierre de sesión exitoso")
+                .createdAt(LocalDateTime.now())
+                .build());
+
+        // 5️ Responder al cliente
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "OK", "Sesión cerrada correctamente")
         );
     }
+
 
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

@@ -24,6 +24,10 @@ public class JwtServicePort {
         this.jwtProperties = jwtProperties;
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
+    public String getCorrelationId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("correlationId", String.class);
+    }
 
     public String generateToken(User user) {
         List<String> roleNames = user.getRoles().stream()
@@ -49,6 +53,24 @@ public class JwtServicePort {
                 .setSubject(user.getId().toString())
                 .claim("roles", roleNames)
                 .claim("permissions", permissions)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(User user, List<String> permissions, String correlationId) {
+
+        List<String> roleNames = user.getRoles().stream()
+                .map(ur -> ur.getRole().getName())
+                .toList();
+
+        return Jwts.builder()
+                .setSubject(user.getId().toString())
+                .claim("roles", roleNames)
+                .claim("permissions", permissions)
+                .claim("correlationId", correlationId)
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))

@@ -74,17 +74,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtService.getClaims(token);
             String userId = claims.getSubject();
 
-            Object rolesClaim = claims.get("roles");
+            Object permissionsClaim = claims.get("permissions");
 
             List<GrantedAuthority> authorities =
-                    (rolesClaim instanceof List<?> roles)
-                            ? roles.stream()
+                    (permissionsClaim instanceof List<?> permissions)
+                            ? permissions.stream()
                             .map(Object::toString)
-                            .map(r -> r.toUpperCase().trim())
-                            .map(r -> r.replace(" ", "_").replace(".", ""))
-                            .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                            .map(p -> p.toUpperCase().trim())
+                            .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList())
                             : Collections.emptyList();
+
 
 
             UsernamePasswordAuthenticationToken authentication =

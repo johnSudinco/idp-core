@@ -27,6 +27,7 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('CREATE')")
     public ResponseEntity<UserResponse> create(
             @RequestBody CreateUserRequest request
     ) {
@@ -36,8 +37,9 @@ public class UserController {
                 .body(UserResponse.from(user));
     }
 
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('WEBMASTER')")
+    @PreAuthorize("hasAuthority('READ')")
     public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
         User user = getUserUseCase.execute(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -46,8 +48,9 @@ public class UserController {
         return ResponseEntity.ok(UserResponse.from(user));
     }
 
+
     @GetMapping("/search")
-    @PreAuthorize("hasRole('WEBMASTER')")
+    @PreAuthorize("hasAuthority('READ')")
     public ResponseEntity<UserResponse> getUserByUsername(
             @RequestParam String username
     ) {
@@ -58,4 +61,3 @@ public class UserController {
         return ResponseEntity.ok(UserResponse.from(user));
     }
 }
-
