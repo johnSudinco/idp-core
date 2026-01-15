@@ -39,6 +39,22 @@ public class JwtServicePort {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
+    public String generateToken(User user, List<String> permissions) {
+
+        List<String> roleNames = user.getRoles().stream()
+                .map(ur -> ur.getRole().getName())
+                .toList();
+
+        return Jwts.builder()
+                .setSubject(user.getId().toString())
+                .claim("roles", roleNames)
+                .claim("permissions", permissions)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public String generateRefreshToken(User user) {
         return Jwts.builder()
