@@ -1,8 +1,8 @@
 package com.idp_core.idp_core.application.usecase;
 
-import com.idp_core.idp_core.application.port.TokenService;
 import com.idp_core.idp_core.domain.model.AuthorizationCode;
 import com.idp_core.idp_core.domain.model.Client;
+import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import com.idp_core.idp_core.domain.port.repository.AuthorizationCodeRepositoryPort;
 import com.idp_core.idp_core.domain.port.repository.ClientRepositoryPort;
 import org.springframework.stereotype.Service;
@@ -13,11 +13,11 @@ public class ExchangeAuthorizationCodeUseCase {
 
     private final AuthorizationCodeRepositoryPort authorizationCodeRepository;
     private final ClientRepositoryPort clientRepository;
-    private final TokenService tokenService; // servicio para generar JWT
+    private final JwtServicePort tokenService; // servicio para generar JWT
 
     public ExchangeAuthorizationCodeUseCase(AuthorizationCodeRepositoryPort authorizationCodeRepository,
                                             ClientRepositoryPort clientRepository,
-                                            TokenService tokenService) {
+                                            JwtServicePort tokenService) {
         this.authorizationCodeRepository = authorizationCodeRepository;
         this.clientRepository = clientRepository;
         this.tokenService = tokenService;
@@ -56,6 +56,6 @@ public class ExchangeAuthorizationCodeUseCase {
         authorizationCodeRepository.save(code);
 
         // Generar Access Token (ejemplo JWT)
-        return tokenService.generateAccessToken(code.getUser(), client);
+        return tokenService.generateRefreshToken(code.getUser());
     }
 }

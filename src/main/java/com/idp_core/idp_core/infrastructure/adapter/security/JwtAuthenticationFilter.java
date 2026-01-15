@@ -1,5 +1,6 @@
 package com.idp_core.idp_core.infrastructure.adapter.security;
 
+import com.idp_core.idp_core.application.port.SessionService;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -25,9 +26,14 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtServicePort jwtService;
+    private final SessionService sessionService;
 
-    public JwtAuthenticationFilter(JwtServicePort jwtService) {
+    public JwtAuthenticationFilter(
+            JwtServicePort jwtService,
+            SessionService sessionService
+    ) {
         this.jwtService = jwtService;
+        this.sessionService = sessionService;
     }
 
     @Override
@@ -37,80 +43,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String path = request.getServletPath();
+        String path = request.getServletPath();
 
-        // 1. Rutas públicas
+        // Endpoints públicos
         if (path.startsWith("/api/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        // 2. No hay token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String token = authHeader.substring(7);
+        String token = authHeader.substring(7);
 
         try {
-            // 3️. Evitar reautenticación
-            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            if (!jwtService.validateToken(token)) {
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            // 4️. Validar token
-            if (!jwtService.validateToken(token)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+            if (sessionService.isTokenRevoked(token)) {
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            // 5. Extraer claims
             Claims claims = jwtService.getClaims(token);
-            String subject = claims.getSubject();
+            String userId = claims.getSubject();
 
-            // 6️. Extraer roles
             Object rolesClaim = claims.get("roles");
 
-            List<GrantedAuthority> authorities;
-
-            if (rolesClaim instanceof List<?> rolesList) {
-                authorities = rolesList.stream()
-                        .map(Object::toString)
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-            } else {
-                authorities = Collections.emptyList();
-            }
+            List<GrantedAuthority> authorities =
+                    (rolesClaim instanceof List<?> roles)
+                            ? roles.stream()
+                            .map(Object::toString)
+                            .map(r -> r.toUpperCase().trim())
+                            .map(r -> r.replace(" ", "_").replace(".", ""))
+                            .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                            .collect(Collectors.toList())
+                            : Collections.emptyList();
 
 
-            // 7️. Crear Authentication
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            subject,
+                            userId,
                             null,
                             authorities
                     );
+            // IMPORTANTE: asignar detalles de la request
+            authentication.setDetails( new WebAuthenticationDetailsSource().buildDetails(request) );
 
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            // 8️. Guardar contexto
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            log.debug("Usuario autenticado: {}, roles: {}", subject, authorities);
-
-        } catch (Exception ex) {
-            log.warn("Error procesando JWT: {}", ex.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
-            return;
+        } catch (Exception e) {
+            // NO rompas la cadena
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

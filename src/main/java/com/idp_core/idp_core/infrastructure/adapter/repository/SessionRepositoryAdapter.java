@@ -14,7 +14,10 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
     public SessionRepositoryAdapter(JpaSessionRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
-
+    @Override
+    public Optional<Session> findByTokenHash(String tokenHash) {
+        return jpaRepository.findByTokenHash(tokenHash);
+    }
     @Override
     public Optional<Session> findByUserIdAndTokenHash(Long userId, String tokenHash) {
         return jpaRepository.findByUserIdAndTokenHash(userId, tokenHash);

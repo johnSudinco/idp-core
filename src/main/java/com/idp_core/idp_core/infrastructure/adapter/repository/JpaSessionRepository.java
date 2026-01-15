@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface JpaSessionRepository extends JpaRepository<Session, Long> {
+    Optional<Session> findByTokenHash(String tokenHash);
     Optional<Session> findByUserIdAndTokenHash(Long userId, String tokenHash);
 }

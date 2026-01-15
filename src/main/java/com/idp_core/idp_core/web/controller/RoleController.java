@@ -28,7 +28,7 @@ public class RoleController {
     }
 
     @PostMapping("/assign")
-    @PreAuthorize("hasAuthority('WEBMASTER')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<String>> assignRoleToUser(
             @RequestBody AssignRoleRequest request) {
 
@@ -55,7 +55,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/remove")
-    @PreAuthorize("hasAuthority('WEBMASTER')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<String>> removeRoleFromUser(
             @RequestBody AssignRoleRequest request) {
 

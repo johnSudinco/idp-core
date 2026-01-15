@@ -1,19 +1,17 @@
 package com.idp_core.idp_core.domain.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "sessions", schema = "auth")
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Session {
 
     @Id
@@ -27,4 +25,18 @@ public class Session {
     private String userAgent;
     private LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
+
+    /* ======================
+       LÓGICA DE DOMINIO
+       ====================== */
+
+    public boolean isTerminated() {
+        return terminatedAt != null;
+    }
+
+    public void terminate() {
+        if (this.terminatedAt == null) {
+            this.terminatedAt = LocalDateTime.now();
+        }
+    }
 }

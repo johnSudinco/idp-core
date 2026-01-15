@@ -16,17 +16,49 @@ public class SessionService {
         this.sessionRepository = sessionRepository;
     }
 
+    /**
+     * Se llama en LOGIN
+     */
+    public void registerSession(Long userId, Long clientId, String token) {
+        sessionRepository.save(
+                Session.builder()
+                        .userId(userId)
+                        .clientId(clientId)
+                        .tokenHash(hash(token))
+                        .createdAt(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+
+    /**
+     * Se llama en LOGOUT
+     */
     public void terminateSession(Long userId, String token) {
         String tokenHash = hash(token);
 
-        Session session = sessionRepository.findByUserIdAndTokenHash(userId, tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Sesión no encontrada"));
+        sessionRepository.findByUserIdAndTokenHash(userId, tokenHash)
+                .ifPresent(session -> {
+                    if (!session.isTerminated()) {
+                        session.setTerminatedAt(LocalDateTime.now());
+                        sessionRepository.save(session);
+                    }
+                });
+    }
 
-        session.setTerminatedAt(LocalDateTime.now());
-        sessionRepository.save(session);
+    /**
+     * Se llama en CADA REQUEST
+     */
+    public boolean isTokenRevoked(String token) {
+        String tokenHash = hash(token);
+
+        return sessionRepository.findByTokenHash(tokenHash)
+                .map(Session::isTerminated)
+                .orElse(false); //  NO existe = NO revocado
     }
 
     private String hash(String token) {
-        return DigestUtils.sha256Hex(token); // hashing consistente
+        return DigestUtils.sha256Hex(token);
     }
 }
+

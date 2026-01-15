@@ -29,7 +29,7 @@ server:
   port: 9090
 
 jwt:
-  expiration: 1800000
+  expiration: 9000000
   issuer: idp-core
   secret: 3f8d9a7c2e6b4f1a9d8c7e5f3a2b1c0d
 

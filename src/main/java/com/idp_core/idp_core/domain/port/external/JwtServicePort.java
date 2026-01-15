@@ -27,9 +27,8 @@ public class JwtServicePort {
 
     public String generateToken(User user) {
         List<String> roleNames = user.getRoles().stream()
-                .map(UserRole::getRoleName)
+                .map(ur -> ur.getRole().getName())
                 .toList();
-
 
         return Jwts.builder()
                 .setSubject(user.getId().toString())
@@ -48,31 +47,36 @@ public class JwtServicePort {
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)) // 7 días
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(key, SignatureAlgorithm.HS256) .compact();
     }
-
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .requireIssuer(jwtProperties.getIssuer()) //  asegura que coincida el issuer
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException("Token expirado", e);
+            // Token expirado → devuelve false
+            return false;
         } catch (JwtException e) {
-            throw new RuntimeException("Token inválido", e);
+            // Token inválido → devuelve false
+            return false;
         }
     }
-
 
     public Claims getClaims(String token) {
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (JwtException e) {
-            throw new RuntimeException("Token inválido o expirado", e);
-        }
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
+    public Long getUserIdFromToken(String token) {
+        Claims claims = getClaims(token);
+        return Long.valueOf(claims.getSubject());
+    }
+
 }
+
