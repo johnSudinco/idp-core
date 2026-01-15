@@ -1,4 +1,4 @@
-package com.idp_core.idp_core.application.util;
+package com.idp_core.idp_core.application.port;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;

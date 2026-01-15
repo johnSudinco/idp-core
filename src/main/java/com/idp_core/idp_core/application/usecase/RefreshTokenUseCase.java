@@ -1,5 +1,6 @@
 package com.idp_core.idp_core.application.usecase;
-import com.idp_core.idp_core.application.util.TokenHashService;
+import com.idp_core.idp_core.application.port.TokenHashService;
+import com.idp_core.idp_core.domain.model.RefreshTokenFactory;
 import com.idp_core.idp_core.domain.model.RefreshToken;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.port.repository.RefreshTokenRepositoryPort;
@@ -8,10 +9,7 @@ import com.idp_core.idp_core.application.dto.AuthResponse;
 import com.idp_core.idp_core.application.dto.RefreshRequest;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import io.jsonwebtoken.Claims;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class RefreshTokenUseCase {
@@ -20,8 +18,13 @@ public class RefreshTokenUseCase {
     private final UserRepositoryPort userRepository;
     private final RefreshTokenRepositoryPort refreshTokenRepository;
     private final TokenHashService tokenHashService;
-    public RefreshTokenUseCase(JwtServicePort jwtService, UserRepositoryPort userRepository,RefreshTokenRepositoryPort refreshTokenRepository,
-                               TokenHashService tokenHashService) {
+
+    public RefreshTokenUseCase(
+            JwtServicePort jwtService,
+            UserRepositoryPort userRepository,
+            RefreshTokenRepositoryPort refreshTokenRepository,
+            TokenHashService tokenHashService
+    ) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -29,27 +32,39 @@ public class RefreshTokenUseCase {
     }
 
     public AuthResponse execute(RefreshRequest request) {
-        // 1. Validar el refresh token en BD
-        String tokenHash = DigestUtils.sha256Hex(request.getRefreshToken());
+
+        String tokenHash = tokenHashService.hash(request.getRefreshToken());
+
         RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
-                .orElseThrow(() -> new RuntimeException("Refresh token no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Refresh token inválido"));
 
         if (refreshToken.isRevoked() || refreshToken.isExpired()) {
-            throw new RuntimeException("Refresh token inválido");
+            throw new IllegalArgumentException("Refresh token inválido");
         }
 
-        // 2. Validar claims del JWT
         Claims claims = jwtService.getClaims(request.getRefreshToken());
         Long userId = Long.parseLong(claims.getSubject());
 
-        // 3. Buscar usuario
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        // 4. Generar nuevo access token
+        // ROTACIÓN DE REFRESH TOKEN
+        refreshToken.revoke();
+        refreshTokenRepository.save(refreshToken);
+
         String newAccessToken = jwtService.generateToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthResponse(user.getId(), newAccessToken, request.getRefreshToken());
+        refreshTokenRepository.save(
+                RefreshTokenFactory.create(
+                        user.getId(),
+                        claims,
+                        newRefreshToken,
+                        tokenHashService
+                )
+        );
+
+        return new AuthResponse(user.getId(), newAccessToken, newRefreshToken);
     }
 
     public void revokeByRefreshToken(String refreshToken) {
@@ -63,7 +78,5 @@ public class RefreshTokenUseCase {
                     }
                 });
     }
-
-
-
 }
+
