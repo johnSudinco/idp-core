@@ -3,6 +3,7 @@ package com.idp_core.idp_core.domain.model;
 import java.time.LocalDateTime;
 
 public class RefreshToken {
+
     private Long id;
     private Long userId;
     private Long clientId;
@@ -11,7 +12,28 @@ public class RefreshToken {
     private LocalDateTime expiresAt;
     private LocalDateTime revokedAt;
 
-    // Getters y setters
+    /* ======================
+       LÓGICA DE DOMINIO
+       ====================== */
+
+    public boolean isRevoked() {
+        return revokedAt != null;
+    }
+
+    public boolean isExpired() {
+        return expiresAt != null && expiresAt.isBefore(LocalDateTime.now());
+    }
+
+    public void revoke() {
+        if (this.revokedAt == null) {
+            this.revokedAt = LocalDateTime.now();
+        }
+    }
+
+    /* ======================
+       GETTERS / SETTERS
+       ====================== */
+
     public Long getId() {
         return id;
     }
@@ -64,16 +86,8 @@ public class RefreshToken {
         return revokedAt;
     }
 
-    public void setRevokedAt(LocalDateTime revokedAt) {
+    // setter privado → solo se revoca por dominio
+    private void setRevokedAt(LocalDateTime revokedAt) {
         this.revokedAt = revokedAt;
-    }
-
-    // Métodos de conveniencia
-    public boolean isRevoked() {
-        return revokedAt != null;
-    }
-
-    public boolean isExpired() {
-        return expiresAt != null && expiresAt.isBefore(LocalDateTime.now());
     }
 }

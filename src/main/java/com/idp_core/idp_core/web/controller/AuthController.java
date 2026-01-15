@@ -133,11 +133,6 @@ public class AuthController {
 
         String accessToken = extractToken(request);
 
-        if (!jwtService.validateToken(accessToken)) {
-            return ResponseEntity.status(401)
-                    .body(new ApiResponse<>(false, null, "Token inválido"));
-        }
-
         Long userId = jwtService.getUserIdFromToken(accessToken);
         sessionService.terminateSession(userId, accessToken);
 
@@ -147,8 +142,6 @@ public class AuthController {
                 new ApiResponse<>(true, "OK", "Sesión cerrada correctamente")
         );
     }
-
-
 
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

@@ -37,14 +37,16 @@ public class SessionService {
     public void terminateSession(Long userId, String token) {
         String tokenHash = hash(token);
 
-        sessionRepository.findByUserIdAndTokenHash(userId, tokenHash)
+        sessionRepository
+                .findByUserIdAndTokenHash(userId, tokenHash)
                 .ifPresent(session -> {
                     if (!session.isTerminated()) {
-                        session.setTerminatedAt(LocalDateTime.now());
+                        session.terminate();
                         sessionRepository.save(session);
                     }
                 });
     }
+
 
     /**
      * Se llama en CADA REQUEST

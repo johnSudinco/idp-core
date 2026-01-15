@@ -1,4 +1,5 @@
 package com.idp_core.idp_core.application.usecase;
+import com.idp_core.idp_core.application.util.TokenHashService;
 import com.idp_core.idp_core.domain.model.RefreshToken;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.port.repository.RefreshTokenRepositoryPort;
@@ -18,11 +19,13 @@ public class RefreshTokenUseCase {
     private final JwtServicePort jwtService;
     private final UserRepositoryPort userRepository;
     private final RefreshTokenRepositoryPort refreshTokenRepository;
-
-    public RefreshTokenUseCase(JwtServicePort jwtService, UserRepositoryPort userRepository,RefreshTokenRepositoryPort refreshTokenRepository) {
+    private final TokenHashService tokenHashService;
+    public RefreshTokenUseCase(JwtServicePort jwtService, UserRepositoryPort userRepository,RefreshTokenRepositoryPort refreshTokenRepository,
+                               TokenHashService tokenHashService) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.tokenHashService = tokenHashService;
     }
 
     public AuthResponse execute(RefreshRequest request) {
@@ -49,14 +52,18 @@ public class RefreshTokenUseCase {
         return new AuthResponse(user.getId(), newAccessToken, request.getRefreshToken());
     }
 
-    public void revokeByRefreshToken(String refreshTokenPlain) {
-        String tokenHash = DigestUtils.sha256Hex(refreshTokenPlain);
+    public void revokeByRefreshToken(String refreshToken) {
+        String tokenHash = tokenHashService.hash(refreshToken);
 
-        RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
-                .orElseThrow(() -> new IllegalArgumentException("Refresh token no encontrado"));
-
-        refreshToken.setRevokedAt(LocalDateTime.now());
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.findByTokenHash(tokenHash)
+                .ifPresent(token -> {
+                    if (!token.isRevoked()) {
+                        token.revoke();
+                        refreshTokenRepository.save(token);
+                    }
+                });
     }
+
+
 
 }
