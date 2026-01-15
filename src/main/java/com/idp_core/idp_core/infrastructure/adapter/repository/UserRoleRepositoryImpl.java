@@ -1,7 +1,7 @@
 package com.idp_core.idp_core.infrastructure.adapter.repository;
 
-
 import com.idp_core.idp_core.domain.model.UserRole;
+import com.idp_core.idp_core.domain.model.UserRoleId;
 import com.idp_core.idp_core.domain.port.repository.UserRoleRepositoryPort;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +15,8 @@ public class UserRoleRepositoryImpl implements UserRoleRepositoryPort {
     }
 
     @Override
-    public boolean exists(Long userId, Long roleId) {
-        return repository.existsByIdUserIdAndIdRoleId(userId, roleId);
+    public boolean existsById(UserRoleId id) {
+        return repository.existsById(id);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class UserRoleRepositoryImpl implements UserRoleRepositoryPort {
     }
 
     @Override
-    public void delete(Long userId, Long roleId) {
-        repository.deleteByIdUserIdAndIdRoleId(userId, roleId);
+    public void deleteById(UserRoleId id) {
+        repository.deleteById(id);
     }
 }

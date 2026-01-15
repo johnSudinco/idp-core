@@ -31,8 +31,10 @@ public class UserRole {
     public UserRole(User user, Role role) {
         this.user = user;
         this.role = role;
+        this.id = new UserRoleId(user.getId(), role.getId()); // CLAVE
         this.assignedAt = LocalDateTime.now();
     }
+
 
 
 

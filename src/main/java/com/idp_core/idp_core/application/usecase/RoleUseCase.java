@@ -3,6 +3,7 @@ package com.idp_core.idp_core.application.usecase;
 import com.idp_core.idp_core.domain.model.Role;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.model.UserRole;
+import com.idp_core.idp_core.domain.model.UserRoleId;
 import com.idp_core.idp_core.domain.port.repository.RoleRepositoryPort;
 import com.idp_core.idp_core.domain.port.repository.UserRepositoryPort;
 import com.idp_core.idp_core.domain.port.repository.UserRoleRepositoryPort;
@@ -33,18 +34,20 @@ public class RoleUseCase {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Rol no existe"));
 
-        if (userRoleRepository.exists(userId, roleId)) {
+        UserRoleId id = new UserRoleId(userId, roleId);
+
+        if (userRoleRepository.existsById(id)) {
             return;
         }
 
         userRoleRepository.save(new UserRole(user, role));
     }
 
-
     @Transactional
     public void removeRole(Long userId, Long roleId) {
-        userRoleRepository.delete(userId, roleId);
+        userRoleRepository.deleteById(new UserRoleId(userId, roleId));
     }
+
 }
 
 
