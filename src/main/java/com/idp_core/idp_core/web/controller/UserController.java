@@ -5,6 +5,7 @@ import com.idp_core.idp_core.application.usecase.CreateUserUseCase;
 import com.idp_core.idp_core.application.usecase.GetUserUseCase;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.application.dto.UserResponse;
+import com.idp_core.idp_core.web.common.Auditable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class UserController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('READ')")
+    @Auditable(action = "GET_USERID", targetType = "USER")
     public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
         User user = getUserUseCase.execute(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -51,6 +52,7 @@ public class UserController {
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('READ')")
+    @Auditable(action = "GET_USERNAME", targetType = "USER")
     public ResponseEntity<UserResponse> getUserByUsername(
             @RequestParam String username
     ) {

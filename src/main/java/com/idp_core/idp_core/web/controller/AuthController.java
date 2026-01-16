@@ -7,6 +7,7 @@ import com.idp_core.idp_core.domain.model.AuditLog;
 import com.idp_core.idp_core.domain.port.external.EmailServicePort;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import com.idp_core.idp_core.web.common.ApiResponse;
+import com.idp_core.idp_core.web.common.Auditable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,130 +32,67 @@ public class AuthController {
     private final SessionService sessionService ;
 
     @PostMapping("/register")
+    @Auditable(action = "REGISTER", targetType = "USER")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(@RequestBody RegisterRequest request) {
-
-            RegisterResponse response = registerUserUseCase.execute(request);
-
-            logAuditEventUseCase.execute(AuditLog.builder()
-                    .actorUserId(response.getUserId())
-                    .action("REGISTER")
-                    .targetType("USER")
-                    .targetId(response.getUserId())
-                    .metadata("Usuario registrado")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-
-            return ResponseEntity.ok(new ApiResponse<>(true, response, "Usuario registrado correctamente"));
-
+        RegisterResponse response = registerUserUseCase.execute(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, response, "Usuario registrado correctamente"));
     }
 
     @PostMapping("/login")
+    @Auditable(action = "LOGIN_SUCCESS", targetType = "USER")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
-
-            AuthResponse response = loginUseCase.execute(request);
-
-            logAuditEventUseCase.execute(AuditLog.builder()
-                    .actorUserId(response.getUserId())
-                    .action("LOGIN_SUCCESS")
-                    .targetType("USER")
-                    .targetId(response.getUserId())
-                    .correlationId(response.getCorrelationId())
-                    .ipAddress(httpRequest.getRemoteAddr())
-                    .userAgent(httpRequest.getHeader("User-Agent"))
-                    .metadata("Login exitoso")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-
-            return ResponseEntity.ok(new ApiResponse<>(true, response, "Login exitoso"));
-
+        AuthResponse response = loginUseCase.execute(request);
+        return ResponseEntity.ok(new ApiResponse<>(true, response, "Login exitoso"));
     }
 
     @PostMapping("/refresh")
+    @Auditable(action = "REFRESH", targetType = "USER")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody RefreshRequest request) {
-
             AuthResponse response = refreshTokenUseCase.execute(request);
             return ResponseEntity.ok(new ApiResponse<>(true, response, "Token refrescado correctamente"));
-
     }
 
     @GetMapping("/validate")
+    @Auditable(action = "VALIDATE", targetType = "USER")
     public ResponseEntity<ApiResponse<Boolean>> validate(@RequestParam String token) {
-
             boolean isValid = loginUseCase.validateToken(token);
             return ResponseEntity.ok(new ApiResponse<>(true, isValid, isValid ? "Token válido" : "Token inválido"));
-
     }
 
     @PostMapping("/verify-2fa")
+    @Auditable(action = "VERIFY_2FA", targetType = "USER")
     public ResponseEntity<ApiResponse<AuthResponse>> verifyTwoFactor(@RequestBody VerifyTwoFactorRequest request) {
-
             AuthResponse response = loginUseCase.verifyTwoFactor(request.getUsername(), request.getCode());
             return ResponseEntity.ok(new ApiResponse<>(true, response, "2FA verificado correctamente"));
-
     }
 
     @PostMapping("/forgot-password")
+    @Auditable(action = "FORGOT_PASSWORD", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-
             passwordRecoveryUseCase.generateRecoveryToken(request.getEmail());
             log.info("Forgot password solicitado para email: {}", request.getEmail());
-
-            logAuditEventUseCase.execute(AuditLog.builder()
-                    .action("FORGOT_PASSWORD")
-                    .targetType("USER")
-                    .metadata("Solicitud de recuperación de contraseña")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-
             return ResponseEntity.ok(new ApiResponse<>(true, "OK", "Se envió un correo con instrucciones"));
-
     }
 
     @PostMapping("/reset-password")
+    @Auditable(action = "RESET_PASSWORD", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody ResetPasswordRequest request) {
-
             passwordRecoveryUseCase.resetPassword(request.getToken(), request.getNewPassword());
-
-            logAuditEventUseCase.execute(AuditLog.builder()
-                    .action("RESET_PASSWORD")
-                    .targetType("USER")
-                    .correlationId(request.getToken())
-                    .metadata("Contraseña actualizada")
-                    .createdAt(LocalDateTime.now())
-                    .build());
-
             return ResponseEntity.ok(new ApiResponse<>(true, "OK", "Contraseña actualizada correctamente"));
-
     }
     @PostMapping("/logout")
+    @Auditable(action = "LOGOUT", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> logout(
             HttpServletRequest request,
             @RequestBody LogoutRequest logoutRequest) {
-
         // 1️ Extraer token y usuario
         String accessToken = extractToken(request);
         Long userId = jwtService.getUserIdFromToken(accessToken);
-
         // 2️ Terminar sesión en DB
         sessionService.terminateSession(userId, accessToken);
-
         // 3️ Revocar refresh token
         refreshTokenUseCase.revokeByRefreshToken(logoutRequest.getRefreshToken());
-
-        // 4️ Log de auditoría
-        logAuditEventUseCase.execute(AuditLog.builder()
-                .actorUserId(userId)
-                .action("LOGOUT_SUCCESS")
-                .targetType("USER")
-                .targetId(userId)
-                .correlationId(jwtService.getCorrelationId(accessToken)) // si tienes un método para obtenerlo
-                .ipAddress(request.getRemoteAddr())
-                .userAgent(request.getHeader("User-Agent"))
-                .metadata("Cierre de sesión exitoso")
-                .createdAt(LocalDateTime.now())
-                .build());
-
-        // 5️ Responder al cliente
+        // 4 Responder al cliente
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "OK", "Sesión cerrada correctamente")
         );
