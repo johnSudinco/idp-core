@@ -1,9 +1,7 @@
 package com.idp_core.idp_core.domain.port.external;
 
 
-import com.idp_core.idp_core.domain.model.Role;
 import com.idp_core.idp_core.domain.model.User;
-import com.idp_core.idp_core.domain.model.UserRole;
 import com.idp_core.idp_core.infrastructure.adapter.security.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

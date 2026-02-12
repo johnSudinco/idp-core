@@ -3,7 +3,6 @@ package com.idp_core.idp_core.web.controller;
 import com.idp_core.idp_core.application.dto.*;
 import com.idp_core.idp_core.application.port.SessionService;
 import com.idp_core.idp_core.application.usecase.*;
-import com.idp_core.idp_core.domain.model.AuditLog;
 import com.idp_core.idp_core.domain.port.external.EmailServicePort;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import com.idp_core.idp_core.web.common.ApiResponse;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -26,8 +24,6 @@ public class AuthController {
     private final LoginUserUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final PasswordRecoveryUseCase passwordRecoveryUseCase;
-    private final EmailServicePort emailServicePort;
-    private final LogAuditEventUseCase logAuditEventUseCase;
     private final JwtServicePort jwtService;
     private final SessionService sessionService ;
 

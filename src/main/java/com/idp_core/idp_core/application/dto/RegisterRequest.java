@@ -5,7 +5,6 @@ public class RegisterRequest {
     private String email;
     private String password;
     private boolean twoFactor;
-    private String twoFactorCode;
     // Constructor vacío (necesario para serialización/deserialización en Spring)
     public RegisterRequest() {}
 

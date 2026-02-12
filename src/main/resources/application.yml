@@ -1,10 +1,12 @@
 spring:
   application:
-    name: idp-core
+    name: idp-core-backend
+
   datasource:
-    url: jdbc:postgresql://localhost:5433/idp
-    username: admin
-    password: admin
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -12,25 +14,38 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-      host: smtp.gmail.com
-      port: 587
-      username: johnantoniio@gmail.com
-      password: hefspiogshzvgypk
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  profiles:
+    active: dev
+
+  web:
+    cors:
+      mappings:
+        "[/**]":
+          allowed-origins: "http://192.168.161.110:8080"
+          allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+          allowed-headers: "*"
+          allow-credentials: true
 
 server:
-  port: 9090
+  port: 9091
 
 jwt:
   expiration: 9000000
-  issuer: idp-core
-  secret: 3f8d9a7c2e6b4f1a9d8c7e5f3a2b1c0d
-
-
+  issuer: idp-core-backend
+  secret: ${JWT_SECRET}
+  
+app:
+  frontend:
+    url: ${FRONTEND_URL}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}

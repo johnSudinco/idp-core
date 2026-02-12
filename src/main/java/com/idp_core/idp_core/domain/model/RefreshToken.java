@@ -86,8 +86,4 @@ public class RefreshToken {
         return revokedAt;
     }
 
-    // setter privado → solo se revoca por dominio
-    private void setRevokedAt(LocalDateTime revokedAt) {
-        this.revokedAt = revokedAt;
-    }
 }
