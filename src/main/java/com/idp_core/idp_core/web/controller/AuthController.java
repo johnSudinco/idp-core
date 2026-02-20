@@ -3,7 +3,6 @@ package com.idp_core.idp_core.web.controller;
 import com.idp_core.idp_core.application.dto.*;
 import com.idp_core.idp_core.application.port.SessionService;
 import com.idp_core.idp_core.application.usecase.*;
-import com.idp_core.idp_core.domain.port.external.EmailServicePort;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import com.idp_core.idp_core.web.common.ApiResponse;
 import com.idp_core.idp_core.web.common.Auditable;

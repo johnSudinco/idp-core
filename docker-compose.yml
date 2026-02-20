@@ -25,7 +25,7 @@ services:
       - .env
     ports:
       - "9091:9091"
-      - "5006:5005"      
+      - "5005:5005"
     depends_on:
       db:
         condition: service_healthy

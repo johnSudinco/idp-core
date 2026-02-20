@@ -1,7 +1,6 @@
 package com.idp_core.idp_core.web.controller;
 
 import com.idp_core.idp_core.application.dto.CreateUserRequest;
-import com.idp_core.idp_core.application.usecase.CreateUserUseCase;
 import com.idp_core.idp_core.application.usecase.GetUserUseCase;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.application.dto.UserResponse;
@@ -16,28 +15,11 @@ import org.springframework.http.HttpStatus;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final CreateUserUseCase createUserUseCase;
     private final GetUserUseCase getUserUseCase;
 
-    public UserController(
-            CreateUserUseCase createUserUseCase,
-            GetUserUseCase getUserUseCase
-    ) {
-        this.createUserUseCase = createUserUseCase;
+    public UserController(GetUserUseCase getUserUseCase) {
         this.getUserUseCase = getUserUseCase;
     }
-
-    @PostMapping
-    @PreAuthorize("hasAuthority('CREATE')")
-    public ResponseEntity<UserResponse> create(
-            @RequestBody CreateUserRequest request
-    ) {
-        User user = createUserUseCase.execute(request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(UserResponse.from(user));
-    }
-
 
     @GetMapping("/{id}")
     @Auditable(action = "GET_USERID", targetType = "USER")
@@ -48,7 +30,6 @@ public class UserController {
 
         return ResponseEntity.ok(UserResponse.from(user));
     }
-
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('READ')")

@@ -5,6 +5,7 @@ import com.idp_core.idp_core.application.usecase.LogSecurityEventUseCase;
 import com.idp_core.idp_core.domain.exception.InvalidCredentialsException;
 import com.idp_core.idp_core.domain.exception.InvalidTwoFactorCodeException;
 import com.idp_core.idp_core.domain.exception.UserNotFoundException;
+import com.idp_core.idp_core.domain.exception.UsernameAlreadyExistsException;
 import com.idp_core.idp_core.domain.model.ErrorLog;
 import com.idp_core.idp_core.domain.model.SecurityEvent;
 import com.idp_core.idp_core.web.common.ApiResponse;
@@ -73,7 +74,26 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiResponse<>(false, null, ex.getMessage()));
     }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalState(
+            IllegalStateException ex) {
+        log.error("Tipo de excepción: {}", ex.getClass().getName(), ex);
+        logSecurityEventUseCase.execute(SecurityEvent.builder()
+                .eventType("BUSINESS_CONFLICT")
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-Agent"))
+                .details(Map.of("reason", ex.getMessage()))
+                .createdAt(LocalDateTime.now())
+                .build());
 
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiResponse<>(false, null, ex.getMessage()));
+    }
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUsernameExists(UsernameAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiResponse<>(false, null, ex.getMessage()));
+    }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(RuntimeException ex) {
         log.error("Error no controlado", ex);
@@ -113,4 +133,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+
 }
