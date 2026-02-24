@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,9 +75,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Claims claims = jwtService.getClaims(token);
             String userId = claims.getSubject();
 
-            Object permissionsClaim = claims.get("permissions");
+            // Extraer roles
+            Object rolesClaim = claims.get("roles");
+            List<GrantedAuthority> roleAuthorities =
+                    (rolesClaim instanceof List<?> roles)
+                            ? roles.stream()
+                            .map(Object::toString)
+                            .map(r -> "ROLE_" + r.toUpperCase().trim()) // 👈 prefijo ROLE_
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList())
+                            : Collections.emptyList();
 
-            List<GrantedAuthority> authorities =
+            // Extraer permisos
+            Object permissionsClaim = claims.get("permissions");
+            List<GrantedAuthority> permissionAuthorities =
                     (permissionsClaim instanceof List<?> permissions)
                             ? permissions.stream()
                             .map(Object::toString)
@@ -85,7 +97,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .collect(Collectors.toList())
                             : Collections.emptyList();
 
-
+            // Unir roles + permisos
+            List<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.addAll(roleAuthorities);
+            authorities.addAll(permissionAuthorities);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
@@ -93,16 +108,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             null,
                             authorities
                     );
-            // IMPORTANTE: asignar detalles de la request
-            authentication.setDetails( new WebAuthenticationDetailsSource().buildDetails(request) );
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (Exception e) {
+            log.error("Error procesando JWT: {}", e.getMessage());
             // NO rompas la cadena
         }
 
         filterChain.doFilter(request, response);
     }
-
 }

@@ -26,19 +26,23 @@ public class User {
 
     // Constructor protegido para evitar instanciación directa sin validación
     protected User() {}
-    public User(Long id) { this.id = id; }
-    private User(
-            String username,
-            String email,
-            String passwordHash,
-            String status,
-            boolean twoFactor,
-            String name,
-            String lastname,
-            String identification,
-            String phone,
-            String address
-    ) {
+    public User(Long id) {
+        this.id = id;
+    }
+
+    // Constructor completo con id
+    public User(Long id,
+                String username,
+                String email,
+                String passwordHash,
+                String status,
+                boolean twoFactor,
+                String name,
+                String lastname,
+                String identification,
+                String phone,
+                String address) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -51,7 +55,7 @@ public class User {
         this.address = address;
     }
 
-    // Fábrica estática para crear usuarios válidos
+    // Fábrica estática para crear usuarios nuevos (sin id todavía)
     public static User create(
             String username,
             String email,
@@ -73,6 +77,7 @@ public class User {
             throw new IllegalArgumentException("Password requerido");
 
         return new User(
+                null, //  id nulo al inicio
                 username,
                 email,
                 passwordHash,

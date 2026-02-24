@@ -23,9 +23,9 @@ public class RefreshTokenRepositoryAdapter implements RefreshTokenRepositoryPort
     public Token save(Token token) {
         RefreshTokenEntity entity = new RefreshTokenEntity();
         entity.setId(token.getId());
-        entity.setToken(token.getToken()); // 👈 campo correcto
-        entity.setClientId(token.getClient().getId()); // 👈 usar clientId
-        entity.setUserId(token.getUser().getId());     // 👈 usar userId
+        entity.setToken(token.getToken()); //  campo correcto
+        entity.setClientId(token.getClient().getId()); //  usar clientId
+        entity.setUserId(token.getUser().getId());     //  usar userId
         entity.setCreatedAt(token.getIssuedAt().toInstant(ZoneOffset.UTC));
         entity.setExpiresAt(token.getExpiresAt().toInstant(ZoneOffset.UTC));
         entity.setRevokedAt(token.getRevokedAt() != null ? token.getRevokedAt().toInstant(ZoneOffset.UTC) : null);

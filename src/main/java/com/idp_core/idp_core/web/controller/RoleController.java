@@ -27,26 +27,27 @@ public class RoleController {
     }
 
     @PostMapping("/assign")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('ROLE_ASSIGN')")
     @Auditable(action = "ASSIGN_ROLE", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> assignRoleToUser(
             @RequestBody AssignRoleRequest request) {
-            roleService.assignRole(request.getUserId(), request.getRoleId());
-            log.info("Rol {} asignado al usuario {}", request.getRoleId(), request.getUserId());
-            return ResponseEntity.ok(
-                    new ApiResponse<>(true, "OK", "Rol asignado correctamente")
-            );
+        roleService.assignRole(request.getUserId(), request.getRoleId());
+        log.info("Rol {} asignado al usuario {}", request.getRoleId(), request.getUserId());
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "OK", "Rol asignado correctamente")
+        );
     }
 
     @DeleteMapping("/remove")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN') and hasAuthority('ROLE_REMOVE')")
     @Auditable(action = "REMOVE_ROLE", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> removeRoleFromUser(
             @RequestBody AssignRoleRequest request) {
-            roleService.removeRole(request.getUserId(), request.getRoleId());
-            log.info("Rol {} removido del usuario {}", request.getRoleId(), request.getUserId());
-            return ResponseEntity.ok(
-                    new ApiResponse<>(true, "OK", "Rol removido correctamente")
-            );
+        roleService.removeRole(request.getUserId(), request.getRoleId());
+        log.info("Rol {} removido del usuario {}", request.getRoleId(), request.getUserId());
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "OK", "Rol removido correctamente")
+        );
     }
+
 }

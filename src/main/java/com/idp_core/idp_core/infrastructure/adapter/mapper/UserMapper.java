@@ -44,28 +44,29 @@ public class UserMapper {
     public User toDomain(UserEntity entity) {
         if (entity == null) return null;
 
-        User user = User.create(
+        User user = new User(
+                entity.getId(),               //  ahora sí se asigna el id
                 entity.getUsername(),
                 entity.getEmail(),
                 entity.getPasswordHash(),
-                false,
+                entity.getStatus(),
+                entity.isTwoFactor(),
                 entity.getName(),
                 entity.getLastname(),
-                null,
-                null,
-                null
+                entity.getIdentification(),
+                entity.getPhone(),
+                entity.getAddress()
         );
 
         entity.getRoles().forEach(userRoleEntity -> {
-
             Role role = new Role(
                     userRoleEntity.getRole().getId(),
                     userRoleEntity.getRole().getName()
             );
-
-            user.addRole(role); // ← esto ya crea el UserRole internamente
+            user.addRole(role);
         });
 
         return user;
     }
+
 }
