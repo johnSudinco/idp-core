@@ -1,12 +1,10 @@
 package com.idp_core.idp_core.domain.port.repository;
 
 import com.idp_core.idp_core.domain.model.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
-@Repository
-public interface RoleRepositoryPort extends JpaRepository<Role, Long> {
+public interface RoleRepositoryPort {
+    Optional<Role> findById(Long id);
     Optional<Role> findByName(String name);
+    Role save(Role role);
 }

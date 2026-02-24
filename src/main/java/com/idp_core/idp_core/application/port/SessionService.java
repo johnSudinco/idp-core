@@ -31,6 +31,8 @@ public class SessionService {
     }
 
 
+
+
     /**
      * Se llama en LOGOUT
      */

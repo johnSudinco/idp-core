@@ -1,36 +1,33 @@
 package com.idp_core.idp_core.domain.model;
 
-import jakarta.persistence.*;
+import com.idp_core.idp_core.infrastructure.adapter.entities.RolePermissionId;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "role_permissions", schema = "auth")
 public class RolePermission {
 
-    @EmbeddedId
     private RolePermissionId id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
-    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("permissionId")
-    @JoinColumn(name = "permission_id", nullable = false)
     private Permission permission;
-
-    @Column(name = "granted_at", nullable = false)
     private LocalDateTime grantedAt;
 
+    // Constructor protegido para evitar instanciación directa sin validación
     protected RolePermission() {}
 
+    // Constructor público para crear nuevas relaciones
     public RolePermission(Role role, Permission permission) {
+        if (role == null || permission == null) {
+            throw new IllegalArgumentException("Role and Permission cannot be null");
+        }
         this.role = role;
         this.permission = permission;
         this.id = new RolePermissionId(role.getId(), permission.getId());
         this.grantedAt = LocalDateTime.now();
+    }
+
+    // Getters
+    public RolePermissionId getId() {
+        return id;
     }
 
     public Role getRole() {
@@ -43,5 +40,18 @@ public class RolePermission {
 
     public LocalDateTime getGrantedAt() {
         return grantedAt;
+    }
+
+    // equals & hashCode por id
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RolePermission other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

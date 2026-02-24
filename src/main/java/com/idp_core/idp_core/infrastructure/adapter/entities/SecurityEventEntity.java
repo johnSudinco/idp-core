@@ -1,4 +1,4 @@
-package com.idp_core.idp_core.domain.model;
+package com.idp_core.idp_core.infrastructure.adapter.entities;
 
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
@@ -9,26 +9,23 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
-@Table(name = "error_logs", schema = "audit")
+@Table(name = "security_events", schema = "audit")
 @Data
-public class ErrorLogEntity {
+public class SecurityEventEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String level;
-    private String service;
-    private String message;
-
-    @Column(columnDefinition = "TEXT")
-    private String exception;
+    private Long userId;
+    private String eventType;
+    private Long clientId;
+    private String ipAddress;
+    private String userAgent;
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Object> context;
+    private Map<String, Object> details;
 
-    private String correlationId;
     private LocalDateTime createdAt;
 }
-

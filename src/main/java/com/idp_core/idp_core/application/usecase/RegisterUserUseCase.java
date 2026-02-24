@@ -58,12 +58,6 @@ public class RegisterUserUseCase {
                 request.getAddress()
         );
 
-        Role defaultRole = roleRepository.findByName("USER")
-                .orElseThrow(() ->
-                        new IllegalStateException("Rol USER no existe"));
-
-        user.addRole(defaultRole);
-
         User savedUser = userRepository.save(user);
 
         RegisterResponse response = new RegisterResponse();

@@ -1,13 +1,12 @@
 package com.idp_core.idp_core.infrastructure.adapter.repository;
 
-import com.idp_core.idp_core.domain.model.Session;
+import com.idp_core.idp_core.infrastructure.adapter.entities.SessionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-@Repository
-public interface JpaSessionRepository extends JpaRepository<Session, Long> {
-    Optional<Session> findByTokenHash(String tokenHash);
-    Optional<Session> findByUserIdAndTokenHash(Long userId, String tokenHash);
+public interface JpaSessionRepository extends JpaRepository<SessionEntity, UUID> {
+    Optional<SessionEntity> findByTokenHash(String tokenHash);
+    Optional<SessionEntity> findByUserIdAndTokenHash(Long userId, String tokenHash);
 }

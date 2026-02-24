@@ -1,8 +1,9 @@
 package com.idp_core.idp_core.application.usecase;
+
 import com.idp_core.idp_core.application.port.TokenHashService;
-import com.idp_core.idp_core.domain.model.RefreshTokenFactory;
-import com.idp_core.idp_core.domain.model.RefreshToken;
+import com.idp_core.idp_core.domain.model.Token;
 import com.idp_core.idp_core.domain.model.User;
+import com.idp_core.idp_core.domain.model.RefreshTokenFactory;
 import com.idp_core.idp_core.domain.port.repository.RefreshTokenRepositoryPort;
 import com.idp_core.idp_core.domain.port.repository.UserRepositoryPort;
 import com.idp_core.idp_core.application.dto.AuthResponse;
@@ -12,45 +13,41 @@ import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RefreshTokenUseCase {
+public class TokenUseCase {
 
     private final JwtServicePort jwtService;
     private final UserRepositoryPort userRepository;
     private final RefreshTokenRepositoryPort refreshTokenRepository;
-    private final TokenHashService tokenHashService;
 
-    public RefreshTokenUseCase(
+    public TokenUseCase(
             JwtServicePort jwtService,
             UserRepositoryPort userRepository,
-            RefreshTokenRepositoryPort refreshTokenRepository,
-            TokenHashService tokenHashService
+            RefreshTokenRepositoryPort refreshTokenRepository
     ) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
-        this.tokenHashService = tokenHashService;
     }
 
     public AuthResponse execute(RefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
 
-        String tokenHash = tokenHashService.hash(request.getRefreshToken());
-
-        RefreshToken refreshToken = refreshTokenRepository.findByTokenHash(tokenHash)
+        Token token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new IllegalArgumentException("Refresh token inválido"));
 
-        if (refreshToken.isRevoked() || refreshToken.isExpired()) {
+        if (token.isRevoked() || token.isExpired()) {
             throw new IllegalArgumentException("Refresh token inválido");
         }
 
-        Claims claims = jwtService.getClaims(request.getRefreshToken());
+        Claims claims = jwtService.getClaims(refreshToken);
         Long userId = Long.parseLong(claims.getSubject());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         // ROTACIÓN DE REFRESH TOKEN
-        refreshToken.revoke();
-        refreshTokenRepository.save(refreshToken);
+        token.revoke();
+        refreshTokenRepository.save(token);
 
         String newAccessToken = jwtService.generateToken(user);
         String newRefreshToken = jwtService.generateRefreshToken(user);
@@ -59,8 +56,7 @@ public class RefreshTokenUseCase {
                 RefreshTokenFactory.create(
                         user.getId(),
                         claims,
-                        newRefreshToken,
-                        tokenHashService
+                        newRefreshToken
                 )
         );
 
@@ -68,9 +64,7 @@ public class RefreshTokenUseCase {
     }
 
     public void revokeByRefreshToken(String refreshToken) {
-        String tokenHash = tokenHashService.hash(refreshToken);
-
-        refreshTokenRepository.findByTokenHash(tokenHash)
+        refreshTokenRepository.findByToken(refreshToken)
                 .ifPresent(token -> {
                     if (!token.isRevoked()) {
                         token.revoke();
@@ -79,4 +73,3 @@ public class RefreshTokenUseCase {
                 });
     }
 }
-

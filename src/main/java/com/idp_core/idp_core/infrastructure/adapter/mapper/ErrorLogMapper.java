@@ -1,7 +1,7 @@
 package com.idp_core.idp_core.infrastructure.adapter.mapper;
 
 import com.idp_core.idp_core.domain.model.ErrorLog;
-import com.idp_core.idp_core.domain.model.ErrorLogEntity;
+import com.idp_core.idp_core.infrastructure.adapter.entities.ErrorLogEntity;
 
 public class ErrorLogMapper {
 

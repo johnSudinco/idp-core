@@ -2,10 +2,7 @@ package com.idp_core.idp_core.infrastructure.adapter.security;
 
 import com.idp_core.idp_core.application.usecase.LogErrorEventUseCase;
 import com.idp_core.idp_core.application.usecase.LogSecurityEventUseCase;
-import com.idp_core.idp_core.domain.exception.InvalidCredentialsException;
-import com.idp_core.idp_core.domain.exception.InvalidTwoFactorCodeException;
-import com.idp_core.idp_core.domain.exception.UserNotFoundException;
-import com.idp_core.idp_core.domain.exception.UsernameAlreadyExistsException;
+import com.idp_core.idp_core.domain.exception.*;
 import com.idp_core.idp_core.domain.model.ErrorLog;
 import com.idp_core.idp_core.domain.model.SecurityEvent;
 import com.idp_core.idp_core.web.common.ApiResponse;
@@ -133,6 +130,20 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+    @ExceptionHandler(ClientAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleClientAlreadyExists(ClientAlreadyExistsException ex) {
 
+        // Registrar en security_events si quieres auditar
+        logSecurityEventUseCase.execute(SecurityEvent.builder()
+                .eventType("CLIENT_ALREADY_EXISTS")
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-Agent"))
+                .details(Map.of("reason", ex.getMessage()))
+                .createdAt(LocalDateTime.now())
+                .build());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiResponse<>(false, null, ex.getMessage()));
+    }
 
 }

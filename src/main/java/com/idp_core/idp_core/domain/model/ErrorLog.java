@@ -20,4 +20,19 @@ public class ErrorLog {
     private Map<String, Object> context;
     private String correlationId;
     private LocalDateTime createdAt;
+
+    public ErrorLog() {}
+
+    // Constructor completo para compatibilidad
+    public ErrorLog(Long id, String level, String service, String message, String exception,
+                    Map<String, Object> context, String correlationId, LocalDateTime createdAt) {
+        this.id = id;
+        this.level = level;
+        this.service = service;
+        this.message = message;
+        this.exception = exception;
+        this.context = context;
+        this.correlationId = correlationId;
+        this.createdAt = createdAt;
+    }
 }

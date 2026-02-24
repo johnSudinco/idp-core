@@ -21,7 +21,7 @@ public class AuthController {
 
     private final RegisterUserUseCase registerUserUseCase;
     private final LoginUserUseCase loginUseCase;
-    private final RefreshTokenUseCase refreshTokenUseCase;
+    private final TokenUseCase tokenUseCase;
     private final PasswordRecoveryUseCase passwordRecoveryUseCase;
     private final JwtServicePort jwtService;
     private final SessionService sessionService ;
@@ -43,7 +43,7 @@ public class AuthController {
     @PostMapping("/refresh")
     @Auditable(action = "REFRESH", targetType = "USER")
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestBody RefreshRequest request) {
-            AuthResponse response = refreshTokenUseCase.execute(request);
+            AuthResponse response = tokenUseCase.execute(request);
             return ResponseEntity.ok(new ApiResponse<>(true, response, "Token refrescado correctamente"));
     }
 
@@ -86,7 +86,7 @@ public class AuthController {
         // 2️ Terminar sesión en DB
         sessionService.terminateSession(userId, accessToken);
         // 3️ Revocar refresh token
-        refreshTokenUseCase.revokeByRefreshToken(logoutRequest.getRefreshToken());
+        tokenUseCase.revokeByRefreshToken(logoutRequest.getRefreshToken());
         // 4 Responder al cliente
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "OK", "Sesión cerrada correctamente")

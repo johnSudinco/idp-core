@@ -1,8 +1,10 @@
 package com.idp_core.idp_core.infrastructure.adapter.repository;
 
-
 import com.idp_core.idp_core.domain.model.RolePermission;
 import com.idp_core.idp_core.domain.port.repository.RolePermissionRepositoryPort;
+import com.idp_core.idp_core.infrastructure.adapter.entities.PermissionEntity;
+import com.idp_core.idp_core.infrastructure.adapter.entities.RoleEntity;
+import com.idp_core.idp_core.infrastructure.adapter.entities.RolePermissionEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,15 +25,34 @@ public class RolePermissionRepositoryImpl implements RolePermissionRepositoryPor
 
     @Override
     public void save(RolePermission rolePermission) {
-        repository.save(rolePermission);
+        RolePermissionEntity entity = mapToEntity(rolePermission);
+        repository.save(entity);
     }
 
     @Override
     public void delete(Long roleId, Long permissionId) {
         repository.deleteByIdRoleIdAndIdPermissionId(roleId, permissionId);
     }
+
     @Override
     public List<String> findPermissionNamesByUserId(Long userId) {
         return repository.findPermissionNamesByUserId(userId);
     }
+
+    // --- Mapeo del dominio a la entidad ---
+    private RolePermissionEntity mapToEntity(RolePermission rp) {
+        return new RolePermissionEntity(
+                new RoleEntity(rp.getRole().getId()),           // construyes RoleEntity con el id
+                new PermissionEntity(rp.getPermission().getId()), // construyes PermissionEntity con el id
+                rp.getGrantedAt()
+        );
+    }
+
+    // Opcional: mapear de vuelta a dominio
+    // private RolePermission mapToDomain(RolePermissionEntity entity) {
+    //     Role role = new Role(entity.getRole().getId());
+    //     Permission perm = new Permission(entity.getPermission().getId());
+    //     return new RolePermission(role, perm);
+    // }
 }
+

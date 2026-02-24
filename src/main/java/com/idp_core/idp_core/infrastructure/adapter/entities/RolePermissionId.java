@@ -1,8 +1,7 @@
-package com.idp_core.idp_core.domain.model;
+package com.idp_core.idp_core.infrastructure.adapter.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -22,20 +21,15 @@ public class RolePermissionId implements Serializable {
         this.permissionId = permissionId;
     }
 
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    public Long getPermissionId() {
-        return permissionId;
-    }
+    public Long getRoleId() { return roleId; }
+    public Long getPermissionId() { return permissionId; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RolePermissionId that)) return false;
-        return Objects.equals(roleId, that.roleId)
-                && Objects.equals(permissionId, that.permissionId);
+        return Objects.equals(roleId, that.roleId) &&
+                Objects.equals(permissionId, that.permissionId);
     }
 
     @Override

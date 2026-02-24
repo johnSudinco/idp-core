@@ -5,25 +5,22 @@ import io.jsonwebtoken.Claims;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 public class RefreshTokenFactory {
+    public static Token create(Long userId, Claims claims, String refreshToken) {
+        LocalDateTime issuedAt = claims.getIssuedAt().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();
+        LocalDateTime expiresAt = claims.getExpiration().toInstant().atZone(ZoneOffset.UTC).toLocalDateTime();
 
-    public static RefreshToken create(
-            Long userId,
-            Claims claims,
-            String rawToken,
-            TokenHashService hashService
-    ) {
-        RefreshToken token = new RefreshToken();
-        token.setUserId(userId);
-        token.setClientId(claims.get("clientId", Long.class));
-        token.setIssuedAt(LocalDateTime.now());
-        token.setExpiresAt(
-                claims.getExpiration().toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()
+        return new Token(
+                null,
+                refreshToken,   //  se guarda el token directamente
+                new User(userId),
+                new Client(Long.parseLong(claims.get("client_id").toString())),
+                issuedAt,
+                expiresAt,
+                null
         );
-        token.setTokenHash(hashService.hash(rawToken));
-        return token;
     }
 }
+

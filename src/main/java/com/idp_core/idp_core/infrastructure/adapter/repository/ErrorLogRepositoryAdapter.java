@@ -1,9 +1,8 @@
 package com.idp_core.idp_core.infrastructure.adapter.repository;
 
 import com.idp_core.idp_core.domain.model.ErrorLog;
-import com.idp_core.idp_core.domain.model.ErrorLogEntity;
 import com.idp_core.idp_core.domain.port.repository.ErrorLogRepositoryPort;
-import com.idp_core.idp_core.infrastructure.adapter.mapper.ErrorLogMapper;
+import com.idp_core.idp_core.infrastructure.adapter.entities.ErrorLogEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,9 +15,40 @@ public class ErrorLogRepositoryAdapter implements ErrorLogRepositoryPort {
     }
 
     @Override
-    public ErrorLog save(ErrorLog errorLog) {
-        ErrorLogEntity entity = ErrorLogMapper.toEntity(errorLog);
-        ErrorLogEntity saved = jpaRepository.save(entity);
-        return ErrorLogMapper.toDomain(saved);
+    public ErrorLog save(ErrorLog log) {
+        ErrorLogEntity entity = mapToEntity(log);
+        return mapToDomain(jpaRepository.save(entity));
+    }
+
+    private ErrorLogEntity mapToEntity(ErrorLog log) {
+        if (log == null) return null;
+
+        ErrorLogEntity entity = new ErrorLogEntity();
+        entity.setId(log.getId());
+        entity.setLevel(log.getLevel());
+        entity.setService(log.getService());
+        entity.setMessage(log.getMessage());
+        entity.setException(log.getException());
+        entity.setContext(log.getContext());
+        entity.setCorrelationId(log.getCorrelationId());
+        entity.setCreatedAt(log.getCreatedAt());
+
+        return entity;
+    }
+
+    private ErrorLog mapToDomain(ErrorLogEntity entity) {
+        if (entity == null) return null;
+
+        // Aquí usamos el builder de Lombok
+        return ErrorLog.builder()
+                .id(entity.getId())
+                .level(entity.getLevel())
+                .service(entity.getService())
+                .message(entity.getMessage())
+                .exception(entity.getException())
+                .context(entity.getContext())
+                .correlationId(entity.getCorrelationId())
+                .createdAt(entity.getCreatedAt())
+                .build();
     }
 }

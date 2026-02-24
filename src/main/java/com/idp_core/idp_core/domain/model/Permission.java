@@ -1,49 +1,45 @@
 package com.idp_core.idp_core.domain.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "permissions", schema = "auth")
 public class Permission {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String name; // ej: user:create
-
-    @Column(nullable = false)
+    private String name;        // ej: user:create
     private String description;
-
-    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    protected Permission() {
-    }
-
+    // Constructor protegido para evitar instanciación directa sin validación
+    protected Permission() {}
+    public Permission(Long id, String name) { this.id = id; this.name = name; }
     public Permission(String name, String description) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Permission name requerido");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Permission description requerido");
+        }
         this.name = name;
         this.description = description;
         this.createdAt = LocalDateTime.now();
     }
 
-    /* ========= GETTERS ========= */
+    // Getters
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getDescription() { return description; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public Long getId() {
-        return id;
+    // equals & hashCode por id
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Permission other)) return false;
+        return id != null && id.equals(other.id);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

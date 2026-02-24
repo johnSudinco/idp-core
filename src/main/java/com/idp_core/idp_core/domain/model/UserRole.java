@@ -1,45 +1,17 @@
 package com.idp_core.idp_core.domain.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "user_roles", schema = "auth")
 public class UserRole {
 
-    @EmbeddedId
-    private UserRoleId id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
-
-    @Column(name = "assigned_at", nullable = false)
-    private LocalDateTime assignedAt;
-
-
-
-    protected UserRole() {}
+    private final User user;
+    private final Role role;
+    private final LocalDateTime assignedAt;
 
     public UserRole(User user, Role role) {
         this.user = user;
         this.role = role;
-        this.id = new UserRoleId(user.getId(), role.getId()); // CLAVE
         this.assignedAt = LocalDateTime.now();
-    }
-
-
-
-
-    public UserRoleId getId() {
-        return id;
     }
 
     public User getUser() {
@@ -53,10 +25,6 @@ public class UserRole {
     public LocalDateTime getAssignedAt() {
         return assignedAt;
     }
-
-    /* ======================
-       MÉTODOS DE DOMINIO
-       ====================== */
 
     public String getRoleName() {
         return role.getName();

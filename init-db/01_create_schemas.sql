@@ -2754,3 +2754,9 @@ ALTER TABLE ONLY tenant.user_tenants
 INSERT INTO auth.clients
 (id, allowed_grant_types, client_id, client_secret_hash, created_at, "name", redirect_uris, "type", updated_at)
 VALUES(1, NULL, '1', '9f3c2a7d1e8b4c6f0a9e5d7c3b1f2e4a9c8d7e6f5b4a3c2d1e0f9a8b7c6d', NULL, '"DEFAULT_CLIENT"', 'http://192.168.161.110:8080', NULL, NULL);
+INSERT INTO auth.roles
+(id, "name", description)
+VALUES(1, 'USER', 'Usuarios');
+INSERT INTO auth.roles
+(id, "name", description)
+VALUES(2, 'ADMIN', 'Administradores');

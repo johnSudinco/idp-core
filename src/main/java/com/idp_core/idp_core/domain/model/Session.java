@@ -1,23 +1,14 @@
 package com.idp_core.idp_core.domain.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "sessions", schema = "auth")
-@Getter
-@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
 public class Session {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long userId;
     private Long clientId;
     private String tokenHash;
@@ -25,10 +16,6 @@ public class Session {
     private String userAgent;
     private LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
-
-    /* ======================
-       LÓGICA DE DOMINIO
-       ====================== */
 
     public boolean isTerminated() {
         return terminatedAt != null;

@@ -1,7 +1,7 @@
 package com.idp_core.idp_core.infrastructure.adapter.mapper;
 
 import com.idp_core.idp_core.domain.model.SecurityEvent;
-import com.idp_core.idp_core.domain.model.SecurityEventEntity;
+import com.idp_core.idp_core.infrastructure.adapter.entities.SecurityEventEntity;
 
 public class SecurityEventMapper {
 
