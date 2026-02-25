@@ -1,24 +1,4 @@
 services:
-  db:
-    image: postgres:16.4
-    container_name: postgres-core
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres-idp:/var/lib/postgresql/data
-      - ./init-db:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build: .
     env_file:
@@ -26,9 +6,7 @@ services:
     ports:
       - "9091:9091"
       - "5005:5005"
-    depends_on:
-      db:
-        condition: service_healthy
+
 
 
 volumes:
