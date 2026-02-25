@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAuthority('READ')")
+    @PreAuthorize("hasAuthority('USER_READ')")
     @Auditable(action = "GET_USERNAME", targetType = "USER")
     public ResponseEntity<UserResponse> getUserByUsername(
             @RequestParam String username

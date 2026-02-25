@@ -11,6 +11,7 @@ import com.idp_core.idp_core.domain.port.external.EmailServicePort;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
 import com.idp_core.idp_core.domain.port.repository.RolePermissionRepositoryPort;
 import com.idp_core.idp_core.domain.port.repository.UserRepositoryPort;
+import com.idp_core.idp_core.web.common.DataEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class LoginUserUseCase {
 
     private static final Long DEFAULT_CLIENT_ID = 1L;
     private static final SecureRandom secureRandom = new SecureRandom();
-
+    private final DataEncryptor dataEncryptor;
     private final UserRepositoryPort userRepository;
     private final JwtServicePort jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -37,13 +38,15 @@ public class LoginUserUseCase {
             PasswordEncoder passwordEncoder,
             EmailServicePort emailService,
             SessionService sessionService,
-            RolePermissionRepositoryPort rolePermissionRepository) {
+            RolePermissionRepositoryPort rolePermissionRepository,
+            DataEncryptor dataEncryptor) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.sessionService = sessionService;
         this.rolePermissionRepository = rolePermissionRepository;
+        this.dataEncryptor=dataEncryptor;
     }
 
     public AuthResponse execute(LoginRequest request) {

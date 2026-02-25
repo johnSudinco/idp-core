@@ -2,6 +2,7 @@ package com.idp_core.idp_core.infrastructure.adapter.security;
 
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.port.external.JwtServicePort;
+import com.idp_core.idp_core.web.common.DataEncryptor;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ public class JwtServiceAdapter implements JwtServicePort {
 
     private final JwtProperties jwtProperties;
     private final Key key;
+    private final DataEncryptor dataEncryptor;
 
-    public JwtServiceAdapter(JwtProperties jwtProperties) {
+    public JwtServiceAdapter(JwtProperties jwtProperties,DataEncryptor dataEncryptor) {
         this.jwtProperties = jwtProperties;
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        this.dataEncryptor=dataEncryptor;
     }
 
     @Override
@@ -31,7 +34,7 @@ public class JwtServiceAdapter implements JwtServicePort {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .claim("username", user.getUsername())
-                .claim("email", user.getEmail())
+                .claim("email", (user.getEmail()))
                 .claim("roles", roleNames)
                 .claim("permissions", permissions)
                 .setIssuer(jwtProperties.getIssuer())

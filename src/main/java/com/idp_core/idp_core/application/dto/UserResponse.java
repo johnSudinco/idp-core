@@ -15,7 +15,7 @@ public record UserResponse(
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                anonymizeEmail(user.getEmail()),
+                user.getEmail(),//aqui anonimizar si fuera necesario
                 user.getStatus(),
                 user.getRoleNames()
         );
