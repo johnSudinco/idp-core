@@ -22,12 +22,12 @@ public class ClientEntity {
     private String type;
 
     @ElementCollection
-    @CollectionTable(name = "client_redirect_uris", joinColumns = @JoinColumn(name = "client_id"))
+    @CollectionTable(name = "client_redirect_uris",schema="auth",joinColumns = @JoinColumn(name = "client_id"))
     @Column(name = "redirect_uri")
     private Set<String> redirectUris;
 
     @ElementCollection
-    @CollectionTable(name = "client_allowed_grant_types", joinColumns = @JoinColumn(name = "client_id"))
+    @CollectionTable(name = "client_allowed_grant_types",schema="auth", joinColumns = @JoinColumn(name = "client_id"))
     @Column(name = "grant_type")
     private Set<String> allowedGrantTypes;
 

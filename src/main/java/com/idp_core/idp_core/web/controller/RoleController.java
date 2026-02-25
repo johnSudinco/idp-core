@@ -27,7 +27,7 @@ public class RoleController {
     }
 
     @PostMapping("/assign")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('ROLE_ASSIGN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') and hasAuthority('ROLE_ASSIGN')")
     @Auditable(action = "ASSIGN_ROLE", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> assignRoleToUser(
             @RequestBody AssignRoleRequest request) {
@@ -39,7 +39,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/remove")
-    @PreAuthorize("hasRole('ADMIN') and hasAuthority('ROLE_REMOVE')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') and hasAuthority('ROLE_REMOVE')")
     @Auditable(action = "REMOVE_ROLE", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> removeRoleFromUser(
             @RequestBody AssignRoleRequest request) {

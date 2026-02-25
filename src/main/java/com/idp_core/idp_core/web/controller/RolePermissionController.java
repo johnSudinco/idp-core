@@ -19,7 +19,7 @@ public class RolePermissionController {
     }
 
     @PostMapping("/assign")
-    @PreAuthorize("hasAuthority('WEBMASTER')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') and hasAuthority('ROLE_REMOVE')")
     @Auditable(action = "ASSIGN_ROLE_PERMISSION", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> assignPermission(
             @RequestBody AssignPermissionRequest request) {
@@ -32,7 +32,7 @@ public class RolePermissionController {
         );
     }
     @DeleteMapping("/revoke")
-    @PreAuthorize("hasAuthority('WEBMASTER')")
+    @PreAuthorize("hasRole('SUPER_ADMIN') and hasAuthority('ROLE_REMOVE')")
     @Auditable(action = "REVOKE_ROLE_PERMISSION", targetType = "USER")
     public ResponseEntity<ApiResponse<String>> revokePermission(
             @RequestParam Long roleId,
