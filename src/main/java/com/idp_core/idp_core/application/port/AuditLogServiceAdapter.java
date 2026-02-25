@@ -3,7 +3,7 @@ package com.idp_core.idp_core.application.port;
 import com.idp_core.idp_core.domain.model.AuditLog;
 import com.idp_core.idp_core.domain.port.repository.AuditLogServicePort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.AuditLogJpaEntity;
-import com.idp_core.idp_core.infrastructure.adapter.repository.JpaAuditLogRepository;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaAuditLogRepository;
 import org.springframework.stereotype.Service;
 
 @Service

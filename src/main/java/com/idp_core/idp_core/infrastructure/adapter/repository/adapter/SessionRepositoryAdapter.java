@@ -1,9 +1,9 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.Session;
 import com.idp_core.idp_core.domain.port.repository.SessionRepositoryPort;
-import com.idp_core.idp_core.infrastructure.adapter.entities.SessionEntity;
 import com.idp_core.idp_core.infrastructure.adapter.mapper.SessionMapper;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaSessionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

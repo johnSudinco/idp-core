@@ -1,10 +1,11 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.impl;
 
 import com.idp_core.idp_core.domain.model.RolePermission;
 import com.idp_core.idp_core.domain.port.repository.RolePermissionRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.PermissionEntity;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RoleEntity;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RolePermissionEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaRolePermissionRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

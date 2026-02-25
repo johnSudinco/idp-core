@@ -1,8 +1,9 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.Role;
 import com.idp_core.idp_core.domain.port.repository.RoleRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RoleEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaRoleRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

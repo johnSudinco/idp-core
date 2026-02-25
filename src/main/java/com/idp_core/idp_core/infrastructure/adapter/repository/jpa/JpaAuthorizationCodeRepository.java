@@ -1,4 +1,4 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.jpa;
 
 import com.idp_core.idp_core.infrastructure.adapter.entities.AuthorizationCodeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

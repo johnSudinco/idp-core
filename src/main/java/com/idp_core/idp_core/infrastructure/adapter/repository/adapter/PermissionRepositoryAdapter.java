@@ -1,8 +1,9 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.Permission;
 import com.idp_core.idp_core.domain.port.repository.PermissionRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.PermissionEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaPermissionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

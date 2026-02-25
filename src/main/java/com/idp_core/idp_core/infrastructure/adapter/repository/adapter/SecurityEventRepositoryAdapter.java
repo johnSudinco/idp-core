@@ -1,9 +1,10 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.SecurityEvent;
 import com.idp_core.idp_core.infrastructure.adapter.entities.SecurityEventEntity;
 import com.idp_core.idp_core.domain.port.repository.SecurityEventRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.mapper.SecurityEventMapper;
+import com.idp_core.idp_core.infrastructure.adapter.repository.SpringDataSecurityEventRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

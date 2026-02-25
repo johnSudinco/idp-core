@@ -1,8 +1,9 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.impl;
 
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.port.repository.UserRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.mapper.UserMapper;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaUserRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

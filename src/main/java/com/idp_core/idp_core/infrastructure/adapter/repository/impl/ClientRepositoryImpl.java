@@ -1,9 +1,10 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.impl;
 
 import com.idp_core.idp_core.domain.model.Client;
 import com.idp_core.idp_core.domain.port.repository.ClientRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.ClientEntity;
 import com.idp_core.idp_core.infrastructure.adapter.mapper.ClientMapper;
+import com.idp_core.idp_core.infrastructure.adapter.repository.SpringDataClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

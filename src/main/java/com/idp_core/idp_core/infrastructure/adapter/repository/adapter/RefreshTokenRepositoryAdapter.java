@@ -1,10 +1,11 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.Client;
 import com.idp_core.idp_core.domain.model.Token;
 import com.idp_core.idp_core.domain.model.User;
 import com.idp_core.idp_core.domain.port.repository.RefreshTokenRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RefreshTokenEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaRefreshTokenRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.ZoneOffset;

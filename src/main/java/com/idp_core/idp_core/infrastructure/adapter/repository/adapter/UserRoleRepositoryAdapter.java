@@ -1,4 +1,4 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.UserRole;
 import com.idp_core.idp_core.domain.model.UserRoleId;
@@ -6,6 +6,7 @@ import com.idp_core.idp_core.domain.port.repository.UserRoleRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RoleEntity;
 import com.idp_core.idp_core.infrastructure.adapter.entities.UserEntity;
 import com.idp_core.idp_core.infrastructure.adapter.entities.UserRoleEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaUserRoleRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

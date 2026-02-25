@@ -1,8 +1,9 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.adapter;
 
 import com.idp_core.idp_core.domain.model.ErrorLog;
 import com.idp_core.idp_core.domain.port.repository.ErrorLogRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.ErrorLogEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.SpringDataErrorLogRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

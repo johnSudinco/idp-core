@@ -1,9 +1,10 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.impl;
 
 
 import com.idp_core.idp_core.domain.model.PasswordResetToken;
 import com.idp_core.idp_core.domain.port.repository.PasswordResetTokenRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.PasswordResetTokenEntity;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaPasswordResetTokenRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

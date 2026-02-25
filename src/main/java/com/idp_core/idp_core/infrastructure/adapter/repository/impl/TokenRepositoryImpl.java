@@ -1,9 +1,10 @@
-package com.idp_core.idp_core.infrastructure.adapter.repository;
+package com.idp_core.idp_core.infrastructure.adapter.repository.impl;
 
 import com.idp_core.idp_core.domain.model.Token;
 import com.idp_core.idp_core.domain.port.repository.TokenRepositoryPort;
 import com.idp_core.idp_core.infrastructure.adapter.entities.RefreshTokenEntity;
 import com.idp_core.idp_core.infrastructure.adapter.mapper.TokenMapper;
+import com.idp_core.idp_core.infrastructure.adapter.repository.jpa.JpaRefreshTokenRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
