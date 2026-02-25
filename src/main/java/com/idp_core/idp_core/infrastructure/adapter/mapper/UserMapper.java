@@ -17,11 +17,20 @@ public class UserMapper {
         if (user == null) return null;
 
         UserEntity entity = new UserEntity();
+
+        entity.setId(user.getId()); // importante para updates
         entity.setUsername(user.getUsername());
         entity.setEmail(user.getEmail());
         entity.setPasswordHash(user.getPasswordHash());
         entity.setName(user.getName());
         entity.setLastname(user.getLastname());
+        entity.setStatus(user.getStatus());
+        entity.setTwoFactor(user.isTwoFactor());
+
+        //  ESTO ES LO QUE TE FALTABA
+        entity.setIdentification(user.getIdentification());
+        entity.setPhone(user.getPhone());
+        entity.setAddress(user.getAddress());
 
         entity.setRoles(
                 user.getRoles().stream()
