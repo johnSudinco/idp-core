@@ -28,9 +28,16 @@ public class AuthController {
 
     @PostMapping("/register")
     @Auditable(action = "REGISTER", targetType = "USER")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(
+            @RequestBody RegisterRequest request,
+            HttpServletRequest httpRequest) {
+
+        // Inyectamos los datos del entorno en el DTO
+        request.setIpAddress(httpRequest.getRemoteAddr());
+        request.setUserAgent(httpRequest.getHeader("User-Agent"));
+
         RegisterResponse response = registerUserUseCase.execute(request);
-        return ResponseEntity.ok(new ApiResponse<>(true, response, "Usuario registrado correctamente"));
+        return ResponseEntity.ok(new ApiResponse<>(true, response, "Registro exitoso"));
     }
 
     @PostMapping("/login")

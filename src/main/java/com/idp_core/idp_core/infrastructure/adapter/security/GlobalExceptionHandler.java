@@ -146,4 +146,24 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, null, ex.getMessage()));
     }
 
+    @ExceptionHandler(ConsentRequiredException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConsentRequired(ConsentRequiredException ex) {
+        log.warn("Intento de registro sin consentimiento: {}", ex.getMessage());
+
+        // Registrar en security_events (Auditoría legal)
+        logSecurityEventUseCase.execute(SecurityEvent.builder()
+                .eventType("CONSENT_REQUIRED")
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-Agent"))
+                .details(Map.of(
+                        "reason", ex.getMessage(),
+                        "path", request.getRequestURI()
+                ))
+                .createdAt(LocalDateTime.now())
+                .build());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse<>(false, null, ex.getMessage()));
+    }
+
 }

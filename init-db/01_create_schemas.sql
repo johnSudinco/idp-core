@@ -2751,7 +2751,26 @@ ALTER TABLE ONLY tenant.user_tenants
     ADD CONSTRAINT user_tenants_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 
+CREATE TABLE user_consents (  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                               user_id BIGINT NOT NULL,
+                               consent_type VARCHAR(50) NOT NULL,
+                               version VARCHAR(20) NOT NULL,
+                               document_path VARCHAR(255),
+                               document_hash VARCHAR(64),
+                               action VARCHAR(20) CHECK (action IN ('ACCEPTED', 'REJECTED')),
+                               user_agent TEXT,
+                               ip_address VARCHAR(45),
+                               is_accepted BOOLEAN NOT NULL,
+                               accepted_at TIMESTAMPTZ,
+                               created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            CONSTRAINT fk_user_consent
+                                FOREIGN KEY (user_id)
+                                REFERENCES users(id)
+                                ON DELETE CASCADE
+);
 
+CREATE INDEX idx_user_consents_user ON user_consents(user_id);
+CREATE INDEX idx_user_consents_type ON user_consents(consent_type);
 
 
 
