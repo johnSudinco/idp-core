@@ -61,7 +61,6 @@ public class RegisterUserUseCase {
         // 5. Persistencia del Usuario
         User savedUser = userRepository.save(user);
 
-        // 6. Registro del Consentimiento (Con los metadatos de auditoría)
         // 6. Registro del Consentimiento (Usando legalConfig)
         UserConsent consent = UserConsent.builder()
                 .userId(savedUser.getId())
